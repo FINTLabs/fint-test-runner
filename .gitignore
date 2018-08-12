@@ -1,0 +1,16 @@
+.gradle
+.idea
+build
+classes
+schema
+out
+*.log*
+/.settings/
+*.project
+*.iml
+run.cmd
+portal.env
+.classpath
+/bin/
+node_modules
+application-*.yml
