@@ -5,3 +5,11 @@ springfox:
 server:
  port: 8083
 
+fint:
+ oauth:
+  enabled: true
+  access-token-uri: https://idp.felleskomponent.no/nidp/oauth/nam/token
+  scope: fint-client
+
+
+

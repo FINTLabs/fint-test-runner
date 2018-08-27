@@ -1,27 +1,28 @@
 package no.fint.testrunner.service;
 
-import no.fint.oauth.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import no.fint.testrunner.model.*;
 import no.fint.testrunner.utilities.HttpHeaderService;
+import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class BasicTestService {
 
     @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired(required = false)
-    private TokenService tokenService;
 
     @Autowired
     private BasicTestValidator basicTestValidator;
@@ -30,14 +31,28 @@ public class BasicTestService {
     private EndpointResourcesService endpointResourcesService;
 
     @Autowired
-    HttpHeaderService httpHeaderService;
+    private HttpHeaderService httpHeaderService;
 
+    @Autowired
+    private AccessTokenRepository accessTokenRepository;
+
+    private HttpHeaders headers;
 
     public BasicTestResult runBasicTest(TestRequest testRequest) {
+
+        OAuth2AccessToken accessToken = accessTokenRepository.getAccessToken(testRequest.getClient());
+
+        if (Pwf.isPwf(testRequest.getBaseUrl())) {
+            headers = httpHeaderService.createPwfHeaders();
+        } else {
+            headers = httpHeaderService.createHeaders(accessToken.getValue());
+        }
+
 
         BasicTestResult basicTestResult = new BasicTestResult();
 
         Optional<List<String>> endpointResources = endpointResourcesService.getEndpointResources(testRequest.getEndpoint());
+
 
         if (endpointResources.isPresent()) {
             endpointResources.get().forEach(r -> {
@@ -56,35 +71,29 @@ public class BasicTestService {
     }
 
     private long getSize(TestRequest testRequest, String resource) {
-        HttpHeaders headers = httpHeaderService.createHeaders(testRequest, tokenService);
         String url = String.format("%s/cache/size", testRequest.getTarget(resource));
-        ResponseEntity<BasicTestSize> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BasicTestSize.class);
 
-        return response.getBody().getSize();
+        log.info(url);
+
+        try {
+            ResponseEntity<BasicTestSize> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BasicTestSize.class);
+            return response.getBody().getSize();
+        } catch (RestClientException e) {
+            return -1;
+        }
     }
 
     private long getLastUpdated(TestRequest testRequest, String resource) {
 
-        HttpHeaders headers = httpHeaderService.createHeaders(testRequest, tokenService);
         String url = String.format("%s/last-updated", testRequest.getTarget(resource));
+        log.info(url);
 
-        ResponseEntity<BasicTestLastUpdated> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BasicTestLastUpdated.class);
-
-        return response.getBody().getLastUpdated();
-    }
-
-    /*
-    private HttpHeaders createHeaders(TestRequest testRequest) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("x-org-id", "pwf.no");
-        headers.set("x-client", testRequest.getClient());
-        if (tokenService != null) {
-            headers.set("Authorization", String.format("Bearer %s", tokenService.getAccessToken()));
+        try {
+            ResponseEntity<BasicTestLastUpdated> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BasicTestLastUpdated.class);
+            return response.getBody().getLastUpdated();
+        } catch (RestClientException e) {
+            return -1;
         }
-
-        return headers;
     }
-    */
-
 
 }

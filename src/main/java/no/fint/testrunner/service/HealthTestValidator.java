@@ -3,17 +3,13 @@ package no.fint.testrunner.service;
 import no.fint.event.model.Event;
 import no.fint.event.model.health.Health;
 import no.fint.event.model.health.HealthStatus;
-import no.fint.testrunner.Props;
 import no.fint.testrunner.model.HealthTestCase;
 import no.fint.testrunner.model.Status;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class HealthTestValidator {
 
-    @Autowired
-    Props props;
 
     public HealthTestCase generateStatus(Event<Health> healthEvent) {
 
@@ -35,8 +31,7 @@ public class HealthTestValidator {
         if (healthy) {
             healthTestCase.setStatus(Status.OK);
             healthTestCase.setMessage("The full component stack is up running!");
-        }
-        else {
+        } else {
             healthTestCase.setStatus(Status.FAILED);
         }
     }

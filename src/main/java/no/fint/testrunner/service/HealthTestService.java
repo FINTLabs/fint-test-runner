@@ -2,10 +2,11 @@ package no.fint.testrunner.service;
 
 import no.fint.event.model.Event;
 import no.fint.event.model.health.Health;
-import no.fint.oauth.TokenService;
+import no.fint.testrunner.model.AccessTokenRepository;
 import no.fint.testrunner.model.HealthTestCase;
 import no.fint.testrunner.model.TestRequest;
 import no.fint.testrunner.utilities.HttpHeaderService;
+import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -21,26 +22,33 @@ public class HealthTestService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired(required = false)
-    private TokenService tokenService;
+    @Autowired
+    private HealthTestValidator healthTestValidator;
 
     @Autowired
-    HealthTestValidator healthTestValidator;
+    private AccessTokenRepository accessTokenRepository;
 
     @Autowired
-    HttpHeaderService httpHeaderService;
+    private HttpHeaderService httpHeaderService;
 
     public HealthTestCase runHealthTest(TestRequest testRequest) {
 
-        HttpHeaders headers = httpHeaderService.createHeaders(testRequest, tokenService);
-
+        HttpHeaders headers;
+        ResponseEntity<Event<Health>> response;
         String url = String.format("%s%s/admin/health", testRequest.getBaseUrl(), testRequest.getEndpoint());
 
-        ResponseEntity<Event<Health>> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Event<Health>>(){});
+        if (Pwf.isPwf(testRequest.getBaseUrl())) {
+            headers = httpHeaderService.createPwfHeaders();
+        } else {
+            headers = httpHeaderService.createHeaders(accessTokenRepository.getAccessToken(testRequest.getClient()).getValue());
+        }
 
+
+        response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Event<Health>>() {
+        });
         return healthTestValidator.generateStatus(response.getBody());
 
-    }
 
+    }
 
 }

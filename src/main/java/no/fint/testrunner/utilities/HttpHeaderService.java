@@ -1,44 +1,34 @@
 package no.fint.testrunner.utilities;
 
-import no.fint.oauth.TokenService;
-import no.fint.portal.model.client.Client;
-import no.fint.portal.model.client.ClientService;
-import no.fint.testrunner.model.TestRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Collections;
 
 @Service
 public class HttpHeaderService {
 
-    @Autowired
-    private ClientService clientService;
 
-    public HttpHeaders createHeaders(TestRequest testRequest, TokenService tokenService) {
+    public HttpHeaders createHeaders(String accessToken) {
 
         HttpHeaders headers = new HttpHeaders();
-        Optional<Client> client = clientService.getClientByDn(testRequest.getClient());
-
-        if (isPwf(testRequest.getBaseUrl())) {
-            headers.set("x-org-id", "pwf.no" /*testRequest.getOrgId()*/);
-        }
-        else {
-            client.ifPresent(c -> {
-                headers.set("x-org-id", c.getAssetId());
-            });
-        }
-        headers.set("x-client", testRequest.getClient());
-        if (tokenService != null) {
-            headers.set("Authorization", String.format("Bearer %s", tokenService.getAccessToken()));
-        }
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
         return headers;
     }
 
-    private boolean isPwf(String baseUrl) {
-        return baseUrl.equals("https://play-with-fint.felleskomponent.no");
+    public HttpHeaders createPwfHeaders() {
+
+        HttpHeaders headers = new HttpHeaders();
+
+        headers.set("x-org-id", "pwf.no");
+        headers.set("x-client", "pwf_no_client");
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
+
+        return headers;
     }
+
 
 }
