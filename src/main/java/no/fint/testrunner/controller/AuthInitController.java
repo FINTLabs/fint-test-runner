@@ -6,6 +6,8 @@ import no.fint.oauth.OAuthRestTemplateFactory;
 import no.fint.portal.model.client.Client;
 import no.fint.portal.model.client.ClientService;
 import no.fint.testrunner.model.AccessTokenRepository;
+import no.fint.testrunner.model.TestRequest;
+import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,24 +36,26 @@ public class AuthInitController {
     private OAuthRestTemplateFactory factory;
 
     @GetMapping
-    public ResponseEntity<Void> authorize(@RequestHeader(name = "x-client-dn") String clientDn) {
+    public ResponseEntity<Void> authorize(@RequestHeader(name = "x-client-dn") String clientDn, @RequestHeader(name = "x-base-url") String baseUrl) {
 
-        boolean isExpired = Optional.ofNullable(accessTokenRepository.getAccessToken(clientDn)).map(OAuth2AccessToken::isExpired).orElse(true);
-        if (!isExpired) {
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+        if (!Pwf.isPwf(baseUrl)) {
+            boolean isExpired = Optional.ofNullable(accessTokenRepository.getAccessToken(clientDn)).map(OAuth2AccessToken::isExpired).orElse(true);
+            if (!isExpired) {
+                return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+            }
+
+            Client client = clientService.getClientByDn(clientDn).orElseThrow(SecurityException::new);
+
+            String password = UUID.randomUUID().toString().toLowerCase();
+            clientService.resetClientPassword(client, password);
+            String clientSecret = clientService.getClientSecret(client);
+
+            OAuth2RestTemplate oAuth2RestTemplate = factory.create(client.getName(), password, client.getClientId(), clientSecret);
+
+            accessTokenRepository.addAccessToken(clientDn, oAuth2RestTemplate.getAccessToken());
+
+            System.out.println("accessTokenRepository.getAccessToken() = " + accessTokenRepository.getAccessToken(clientDn));
         }
-
-        Client client = clientService.getClientByDn(clientDn).orElseThrow(SecurityException::new);
-
-        String password = UUID.randomUUID().toString().toLowerCase();
-        clientService.resetClientPassword(client, password);
-        String clientSecret = clientService.getClientSecret(client);
-
-        OAuth2RestTemplate oAuth2RestTemplate = factory.create(client.getName(), password, client.getClientId(), clientSecret);
-
-        accessTokenRepository.addAccessToken(clientDn, oAuth2RestTemplate.getAccessToken());
-
-        System.out.println("accessTokenRepository.getAccessToken() = " + accessTokenRepository.getAccessToken(clientDn));
         return ResponseEntity.noContent().build();
     }
 
