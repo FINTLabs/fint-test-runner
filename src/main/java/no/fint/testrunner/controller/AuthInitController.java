@@ -35,16 +35,16 @@ public class AuthInitController {
     @Autowired
     private OAuthRestTemplateFactory factory;
 
-    @GetMapping
-    public ResponseEntity<Void> authorize(@RequestHeader(name = "x-client-dn") String clientDn, @RequestHeader(name = "x-base-url") String baseUrl) {
+    @PostMapping
+    public ResponseEntity<Void> authorize(@RequestBody TestRequest testRequest) {
 
-        if (!Pwf.isPwf(baseUrl)) {
-            boolean isExpired = Optional.ofNullable(accessTokenRepository.getAccessToken(clientDn)).map(OAuth2AccessToken::isExpired).orElse(true);
+        if (!Pwf.isPwf(testRequest.getBaseUrl())) {
+            boolean isExpired = Optional.ofNullable(accessTokenRepository.getAccessToken(testRequest.getClient())).map(OAuth2AccessToken::isExpired).orElse(true);
             if (!isExpired) {
-                return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+                return ResponseEntity.noContent().build();
             }
 
-            Client client = clientService.getClientByDn(clientDn).orElseThrow(SecurityException::new);
+            Client client = clientService.getClientByDn(testRequest.getClient()).orElseThrow(SecurityException::new);
 
             String password = UUID.randomUUID().toString().toLowerCase();
             clientService.resetClientPassword(client, password);
@@ -52,9 +52,9 @@ public class AuthInitController {
 
             OAuth2RestTemplate oAuth2RestTemplate = factory.create(client.getName(), password, client.getClientId(), clientSecret);
 
-            accessTokenRepository.addAccessToken(clientDn, oAuth2RestTemplate.getAccessToken());
+            accessTokenRepository.addAccessToken(testRequest.getClient(), oAuth2RestTemplate.getAccessToken());
 
-            System.out.println("accessTokenRepository.getAccessToken() = " + accessTokenRepository.getAccessToken(clientDn));
+            System.out.println("accessTokenRepository.getAccessToken() = " + accessTokenRepository.getAccessToken(testRequest.getClient()));
         }
         return ResponseEntity.noContent().build();
     }

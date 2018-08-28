@@ -4,6 +4,7 @@ import no.fint.event.model.Event;
 import no.fint.event.model.health.Health;
 import no.fint.testrunner.model.AccessTokenRepository;
 import no.fint.testrunner.model.HealthTestCase;
+import no.fint.testrunner.model.Status;
 import no.fint.testrunner.model.TestRequest;
 import no.fint.testrunner.utilities.HttpHeaderService;
 import no.fint.testrunner.utilities.Pwf;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -44,9 +46,16 @@ public class HealthTestService {
         }
 
 
-        response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Event<Health>>() {
-        });
-        return healthTestValidator.generateStatus(response.getBody());
+        try {
+            response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Event<Health>>() {
+            });
+        } catch (RestClientException e) {
+            HealthTestCase healthTestCase = new HealthTestCase();
+            healthTestCase.setStatus(Status.FAILED);
+            healthTestCase.setMessage(String.format("En feil oppstod under helsesjekken (%s)", e.getCause().getCause().getMessage()));
+            return healthTestCase;
+        }
+        return healthTestValidator.generateStatus(response);
 
 
     }
