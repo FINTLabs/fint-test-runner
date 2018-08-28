@@ -23,4 +23,17 @@ public class AccessTokenRepository {
     public OAuth2AccessToken addAccessToken(String key, OAuth2AccessToken value) {
         return tokenCache.put(key, value);
     }
+
+    public void clearAccessTokens(String organisationName) {
+        ConcurrentMap<String, OAuth2AccessToken> tempTokeCache = new ConcurrentSkipListMap<>();
+
+        tokenCache.forEach((s, oAuth2AccessToken) -> {
+            if (s.contains(organisationName)) {
+                tempTokeCache.put(s, oAuth2AccessToken);
+            }
+        });
+        tempTokeCache.forEach((s, oAuth2AccessToken) -> {
+            tokenCache.remove(s, oAuth2AccessToken);
+        });
+    }
 }

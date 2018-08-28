@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @CrossOrigin
 @Api(value = "Basic Tests")
-@RequestMapping("/api/tests/auth-init")
+@RequestMapping("/api/tests/auth")
 
 public class AuthInitController {
 
@@ -35,7 +35,7 @@ public class AuthInitController {
     @Autowired
     private OAuthRestTemplateFactory factory;
 
-    @PostMapping
+    @PostMapping("/init")
     public ResponseEntity<Void> authorize(@RequestBody TestRequest testRequest) {
 
         if (!Pwf.isPwf(testRequest.getBaseUrl())) {
@@ -62,5 +62,12 @@ public class AuthInitController {
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity clientNotFound(Exception e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sorry, men vi finner ikke klienten du valgte!");
+    }
+
+    @GetMapping("/clear/{orgName}")
+    public ResponseEntity<Void> clearAuthorizations(@PathVariable String orgName) {
+        accessTokenRepository.clearAccessTokens(orgName);
+
+        return ResponseEntity.noContent().build();
     }
 }
