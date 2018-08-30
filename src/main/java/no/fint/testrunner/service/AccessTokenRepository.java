@@ -1,4 +1,4 @@
-package no.fint.testrunner.model;
+package no.fint.testrunner.service;
 
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;

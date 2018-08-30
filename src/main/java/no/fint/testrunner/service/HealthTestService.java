@@ -2,7 +2,6 @@ package no.fint.testrunner.service;
 
 import no.fint.event.model.Event;
 import no.fint.event.model.health.Health;
-import no.fint.testrunner.model.AccessTokenRepository;
 import no.fint.testrunner.model.HealthTestCase;
 import no.fint.testrunner.model.Status;
 import no.fint.testrunner.model.TestRequest;

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.fint.oauth.OAuthRestTemplateFactory;
 import no.fint.portal.model.client.Client;
 import no.fint.portal.model.client.ClientService;
-import no.fint.testrunner.model.AccessTokenRepository;
+import no.fint.testrunner.service.AccessTokenRepository;
 import no.fint.testrunner.model.TestRequest;
 import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
