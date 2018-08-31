@@ -63,7 +63,7 @@ public class AuthInitController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sorry, men vi finner ikke klienten du valgte!");
     }
 
-    @GetMapping("/clear/{orgName}")
+    @GetMapping("/clear/{orgName}") // TODO should be a POST request
     public ResponseEntity<Void> clearAuthorizations(@PathVariable String orgName) {
         accessTokenRepository.clearAccessTokens(orgName);
         return ResponseEntity.noContent().build();
