@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class BasicTestController {
 
     @Autowired
-    BasicTestService basicTestService;
+    private BasicTestService basicTestService;
 
     @PostMapping
     public ResponseEntity<BasicTestResult> startBasicTest(@RequestBody TestRequest testRequest) {
