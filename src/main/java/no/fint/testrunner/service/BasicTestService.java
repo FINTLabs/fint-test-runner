@@ -2,7 +2,7 @@ package no.fint.testrunner.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fint.testrunner.model.*;
-import no.fint.testrunner.utilities.HttpHeaderService;
+import no.fint.testrunner.utilities.Headers;
 import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -25,13 +25,7 @@ public class BasicTestService {
     private RestTemplate restTemplate;
 
     @Autowired
-    private BasicTestValidator basicTestValidator;
-
-    @Autowired
     private EndpointResourcesService endpointResourcesService;
-
-    @Autowired
-    private HttpHeaderService httpHeaderService;
 
     @Autowired
     private AccessTokenRepository accessTokenRepository;
@@ -43,9 +37,9 @@ public class BasicTestService {
         OAuth2AccessToken accessToken = accessTokenRepository.getAccessToken(testRequest.getClient());
 
         if (Pwf.isPwf(testRequest.getBaseUrl())) {
-            headers = httpHeaderService.createPwfHeaders();
+            headers = Headers.createPwfHeaders();
         } else {
-            headers = httpHeaderService.createHeaders(accessToken.getValue());
+            headers = Headers.createHeaders(accessToken.getValue());
         }
 
 
@@ -60,7 +54,7 @@ public class BasicTestService {
                 basicTestCase.setLastUpdated(getLastUpdated(testRequest, r));
                 basicTestCase.setSize(getSize(testRequest, r));
                 basicTestCase.setResource(r);
-                basicTestValidator.generateStatus(basicTestCase);
+                basicTestCase.generateStatus();
                 basicTestResult.getCases().add(basicTestCase);
             });
         } else {
@@ -84,7 +78,6 @@ public class BasicTestService {
     }
 
     private long getLastUpdated(TestRequest testRequest, String resource) {
-
         String url = String.format("%s/last-updated", testRequest.getTarget(resource));
         log.info(url);
 

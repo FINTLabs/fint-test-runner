@@ -5,7 +5,7 @@ import no.fint.event.model.health.Health;
 import no.fint.testrunner.model.HealthTestCase;
 import no.fint.testrunner.model.Status;
 import no.fint.testrunner.model.TestRequest;
-import no.fint.testrunner.utilities.HttpHeaderService;
+import no.fint.testrunner.utilities.Headers;
 import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,9 +29,6 @@ public class HealthTestService {
     @Autowired
     private AccessTokenRepository accessTokenRepository;
 
-    @Autowired
-    private HttpHeaderService httpHeaderService;
-
     public HealthTestCase runHealthTest(TestRequest testRequest) {
 
         HttpHeaders headers;
@@ -39,9 +36,9 @@ public class HealthTestService {
         String url = String.format("%s%s/admin/health", testRequest.getBaseUrl(), testRequest.getEndpoint());
 
         if (Pwf.isPwf(testRequest.getBaseUrl())) {
-            headers = httpHeaderService.createPwfHeaders();
+            headers = Headers.createPwfHeaders();
         } else {
-            headers = httpHeaderService.createHeaders(accessTokenRepository.getAccessToken(testRequest.getClient()).getValue());
+            headers = Headers.createHeaders(accessTokenRepository.getAccessToken(testRequest.getClient()).getValue());
         }
 
 

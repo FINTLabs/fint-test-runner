@@ -84,8 +84,6 @@ public class EndpointResourcesService {
     }
 
     public Optional<List<String>> getEndpointResources(String endpoint) {
-        Optional<List<String>> resourceList = Optional.ofNullable(resources.get(endpoint));
-
-        return resourceList;
+        return Optional.ofNullable(resources.get(endpoint));
     }
 }
