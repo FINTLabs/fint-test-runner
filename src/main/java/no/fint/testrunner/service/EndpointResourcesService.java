@@ -15,11 +15,12 @@ public class EndpointResourcesService {
         resources = new HashMap<>();
 
         resources.put("/administrasjon/personal",
-                Arrays.asList("person", "arbeidsforhold", "fravar", "fastlonn", "variablelonn", "fasttillegg"));
+                Arrays.asList("person", "arbeidsforhold", "fravar", "fastlonn", "variabellonn", "fasttillegg"));
         resources.put("/administrasjon/fullmakt",
                 Arrays.asList("fullmakt", "rolle"));
         resources.put("/administrasjon/kodeverk",
-                Arrays.asList("uketimetall",
+                Arrays.asList(
+                        "uketimetall",
                         "ansvar",
                         "stillingskode",
                         "personalressurskategori",
@@ -32,7 +33,7 @@ public class EndpointResourcesService {
                         "arbeidsforholdstype"
                 ));
         resources.put("/administrasjon/organisasjon",
-                Arrays.asList("organisasjonselement"));
+                Collections.singletonList("organisasjonselement"));
 
         resources.put("/utdanning/vurdering",
                 Arrays.asList("eksamensgruppe", "vurdering", "fravar", "karakterverdi"));
@@ -43,7 +44,9 @@ public class EndpointResourcesService {
         resources.put("/utdanning/kodeverk",
                 Arrays.asList("fravarstype", "karakterskala", "skoleeiertype", "elevkategori"));
         resources.put("/utdanning/elev",
-                Arrays.asList("elev",
+                Arrays.asList(
+                        "person",
+                        "elev",
                         "elevforhold",
                         "undervisningsforhold",
                         "skoleressurs",
@@ -53,7 +56,8 @@ public class EndpointResourcesService {
                 ));
 
         resources.put("/utdanning/vigo/kodeverk",
-                Arrays.asList("eksamensformer",
+                Arrays.asList(
+                        "eksamensformer",
                         "eksamensvurderinger",
                         "fag",
                         "fagmerknader",
@@ -84,8 +88,7 @@ public class EndpointResourcesService {
     }
 
     public Optional<List<String>> getEndpointResources(String endpoint) {
-        Optional<List<String>> resourceList = Optional.ofNullable(resources.get(endpoint));
 
-        return resourceList;
+        return Optional.ofNullable(resources.get(endpoint));
     }
 }
