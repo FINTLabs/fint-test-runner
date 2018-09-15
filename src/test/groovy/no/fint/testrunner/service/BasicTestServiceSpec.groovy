@@ -34,10 +34,10 @@ class BasicTestServiceSpec extends Specification {
 
     def "Run basic test on non-pwf url"() {
         given:
-        def lastUpdated = new ObjectMapper().writeValueAsString(new BasicTestLastUpdated(lastUpdated: 123456L))
+        def lastUpdated = toJson(new BasicTestLastUpdated(lastUpdated: 123456L))
         mockServer.expect(requestTo('http://localhost/test/test-resource/last-updated')).andRespond(withSuccess(lastUpdated, MediaType.APPLICATION_JSON))
 
-        def cacheSize = new ObjectMapper().writeValueAsString(new BasicTestSize(size: 5))
+        def cacheSize = toJson(new BasicTestSize(size: 5))
         mockServer.expect(requestTo('http://localhost/test/test-resource/cache/size')).andRespond(withSuccess(cacheSize, MediaType.APPLICATION_JSON))
         def testRequest = new TestRequest('http://localhost', '/test', 'client')
 
@@ -48,6 +48,10 @@ class BasicTestServiceSpec extends Specification {
         1 * endpointResourcesService.getEndpointResources('/test') >> Optional.of(['test-resource'])
         mockServer.verify()
         result.cases.size() == 1
+    }
+
+    private static String toJson(def obj) {
+        new ObjectMapper().writeValueAsString(obj)
     }
 
 }
