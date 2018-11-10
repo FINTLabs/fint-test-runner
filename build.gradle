@@ -1,48 +1,51 @@
 buildscript {
-    apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.3.0/dependencies.gradle'
+    apply from: 'https://raw.githubusercontent.com/FINTlibs/fint-buildscripts/v1.4.0/dependencies.gradle'
     ext {
         springBootVersion = '2.0.4.RELEASE'
     }
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath('com.github.ben-manes:gradle-versions-plugin:0.20.0')
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.github.ben-manes.versions'
 
 group = 'no.fint'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
-    jcenter()
+    mavenLocal()
     repositories {
         maven {
             url "http://dl.bintray.com/fint/maven"
         }
     }
-    mavenLocal()
+    jcenter()
 }
 
 
 dependencies {
     compile('no.fint:fint-oauth-token-service:1.4.0')
-    compile('no.fint:fint-event-model:2.0.1')
-    compile('no.fint:fint-portal-api:3.0.0')
-
+    compile('no.fint:fint-event-model:3.0.0')
+    compile('no.fint:fint-portal-api:3.1.1')
 
     compile("com.github.springfox.loader:springfox-loader:${springfoxLoaderVersion}")
-
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
+    compileOnly('org.projectlombok:lombok:1.18.2')
 
-    compileOnly('org.projectlombok:lombok')
+    testCompile('no.fint:fint-test-utils:0.0.4')
+    testCompile("cglib:cglib-nodep:${cglibVersion}")
+    testCompile("org.spockframework:spock-spring:${spockSpringVersion}")
+    testCompile("org.spockframework:spock-core:${spockSpringVersion}")
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

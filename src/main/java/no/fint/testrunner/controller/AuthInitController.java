@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.fint.oauth.OAuthRestTemplateFactory;
 import no.fint.portal.model.client.Client;
 import no.fint.portal.model.client.ClientService;
-import no.fint.testrunner.model.AccessTokenRepository;
 import no.fint.testrunner.model.TestRequest;
+import no.fint.testrunner.service.AccessTokenRepository;
 import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,17 +23,16 @@ import java.util.UUID;
 @CrossOrigin
 @Api(value = "Basic Tests")
 @RequestMapping("/api/tests/auth")
-
 public class AuthInitController {
 
     @Autowired
-    AccessTokenRepository accessTokenRepository;
+    private AccessTokenRepository accessTokenRepository;
 
     @Autowired
-    ClientService clientService;
+    private ClientService clientService;
 
     @Autowired
-    private OAuthRestTemplateFactory factory;
+    private OAuthRestTemplateFactory templateFactory;
 
     @PostMapping("/init")
     public ResponseEntity<Void> authorize(@RequestBody TestRequest testRequest) {
@@ -50,7 +49,7 @@ public class AuthInitController {
             clientService.resetClientPassword(client, password);
             String clientSecret = clientService.getClientSecret(client);
 
-            OAuth2RestTemplate oAuth2RestTemplate = factory.create(client.getName(), password, client.getClientId(), clientSecret);
+            OAuth2RestTemplate oAuth2RestTemplate = templateFactory.create(client.getName(), password, client.getClientId(), clientSecret);
 
             accessTokenRepository.addAccessToken(testRequest.getClient(), oAuth2RestTemplate.getAccessToken());
 
@@ -64,10 +63,9 @@ public class AuthInitController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sorry, men vi finner ikke klienten du valgte!");
     }
 
-    @GetMapping("/clear/{orgName}")
+    @GetMapping("/clear/{orgName}") // TODO should be a POST request
     public ResponseEntity<Void> clearAuthorizations(@PathVariable String orgName) {
         accessTokenRepository.clearAccessTokens(orgName);
-
         return ResponseEntity.noContent().build();
     }
 }

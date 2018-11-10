@@ -2,13 +2,8 @@ package no.fint.testrunner.controller;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import no.fint.event.model.Event;
-import no.fint.event.model.health.Health;
-import no.fint.testrunner.model.BasicTestResult;
 import no.fint.testrunner.model.HealthTestCase;
-import no.fint.testrunner.model.HealthTestResult;
 import no.fint.testrunner.model.TestRequest;
-import no.fint.testrunner.service.BasicTestService;
 import no.fint.testrunner.service.HealthTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class HealthTestController {
 
     @Autowired
-    HealthTestService healthTestService;
+    private HealthTestService healthTestService;
 
     @PostMapping
     public ResponseEntity<HealthTestCase> startHealthTest(@RequestBody TestRequest testRequest) {

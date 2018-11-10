@@ -17,11 +17,10 @@ import org.springframework.web.bind.annotation.*;
 public class BasicTestController {
 
     @Autowired
-    BasicTestService basicTestService;
+    private BasicTestService basicTestService;
 
     @PostMapping
     public ResponseEntity<BasicTestResult> startBasicTest(@RequestBody TestRequest testRequest) {
-
         log.info("Starting basic test...");
         BasicTestResult basicTestResult = basicTestService.runBasicTest(testRequest);
         log.info("Ending basic test...");
