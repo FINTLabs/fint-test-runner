@@ -15,7 +15,7 @@ public class EndpointResourcesService {
         resources = new HashMap<>();
 
         resources.put("/administrasjon/personal",
-                Arrays.asList("person", "arbeidsforhold", "fravar", "fastlonn", "variabellonn", "fasttillegg"));
+                Arrays.asList("person", "personalressurs", "arbeidsforhold", "fravar", "fastlonn", "variabellonn", "fasttillegg"));
         resources.put("/administrasjon/fullmakt",
                 Arrays.asList("fullmakt", "rolle"));
         resources.put("/administrasjon/kodeverk",
