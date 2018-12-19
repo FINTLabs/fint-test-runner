@@ -49,3 +49,35 @@ dependencies {
     testCompile("org.spockframework:spock-core:${spockSpringVersion}")
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+
+task copyExternalDependencies(type: Copy) {
+    from configurations.runtime
+    into "$buildDir/deps/external"
+    exclude '**/fint-*.jar'
+}
+
+task copyFintDependencies(type: Copy) {
+    from configurations.runtime
+    into "$buildDir/deps/fint"
+    include '**/fint-*.jar'
+}
+
+build.dependsOn(copyExternalDependencies)
+build.dependsOn(copyFintDependencies)
+
+jar {
+    enabled = true
+    manifest {
+        attributes(
+                "Manifest-Version": "1.0",
+                "Main-Class": "no.fint.Application",
+                "Specification-Version": "${version}",
+                "Implementation-Version": "${version}",
+                "Class-Path": configurations.runtime.collect { it.getName() }.join(' ')
+        )
+    }
+}
+
+bootJar {
+    enabled = false
+}
