@@ -45,13 +45,13 @@ public class HealthTestService {
         try {
             response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Event<Health>>() {
             });
+            return healthTestValidator.generateStatus(response.getBody());
         } catch (RestClientException e) {
             HealthTestCase healthTestCase = new HealthTestCase();
             healthTestCase.setStatus(Status.FAILED);
             healthTestCase.setMessage(String.format("En feil oppstod under helsesjekken (%s)", e.getCause().getCause().getMessage()));
             return healthTestCase;
         }
-        return healthTestValidator.generateStatus(response);
 
 
     }
