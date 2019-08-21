@@ -48,7 +48,7 @@ class HealthTestServiceSpec extends Specification {
         result.status == Status.FAILED
     }
 
-    def "Run health test on non-pwf url with successful response from adapter"() {
+    def "Run health test on non-pwf url with healthy response from adapter"() {
         given:
         def testRequest = new TestRequest('http://localhost', '/test', 'client')
         def healthEvent = toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_HEALTHY.name())]))
@@ -60,6 +60,20 @@ class HealthTestServiceSpec extends Specification {
         then:
         mockServer.verify()
         result.status == Status.OK
+    }
+
+    def "Run health test on non-pwf url with unhealthy response from adapter"() {
+        given:
+        def testRequest = new TestRequest('http://localhost', '/test', 'client')
+        def healthEvent = toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_UNHEALTHY.name())]))
+        mockServer.expect(requestTo('http://localhost/test/admin/health')).andRespond(withSuccess(healthEvent, MediaType.APPLICATION_JSON))
+
+        when:
+        def result = service.runHealthTest(testRequest)
+
+        then:
+        mockServer.verify()
+        result.status == Status.PARTIALLY_FAILED
     }
 
     private static String toJson(def obj) {

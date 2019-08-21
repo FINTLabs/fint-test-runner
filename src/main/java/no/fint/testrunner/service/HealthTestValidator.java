@@ -27,8 +27,17 @@ public class HealthTestValidator {
                 .stream()
                 .map(Health::getStatus)
                 .anyMatch(HealthStatus.APPLICATION_HEALTHY.toString()::equals);
+
+        boolean unhealthy = healthTestCase
+                .getHealthData()
+                .stream()
+                .map(Health::getStatus)
+                .anyMatch(HealthStatus.APPLICATION_UNHEALTHY.toString()::equals);
+
         if (healthy) {
             healthTestCase.setStatus(Status.OK);
+        } else if (unhealthy) {
+            healthTestCase.setStatus(Status.PARTIALLY_FAILED);
         } else {
             healthTestCase.setStatus(Status.FAILED);
         }
