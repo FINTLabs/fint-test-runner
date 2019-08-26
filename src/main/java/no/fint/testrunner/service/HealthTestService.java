@@ -1,5 +1,6 @@
 package no.fint.testrunner.service;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.event.model.Event;
 import no.fint.event.model.health.Health;
 import no.fint.testrunner.model.HealthTestCase;
@@ -17,7 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Objects;
+
 @Service
+@Slf4j
 public class HealthTestService {
 
     @Autowired
@@ -43,9 +47,11 @@ public class HealthTestService {
 
 
         try {
+            log.debug("Request: {}", url);
             response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Event<Health>>() {
             });
-            return healthTestValidator.generateStatus(response.getBody());
+            log.debug("Response: {}", response);
+            return healthTestValidator.generateStatus(Objects.requireNonNull(response.getBody(), "No response: " + response.getStatusCode()));
         } catch (RestClientException e) {
             HealthTestCase healthTestCase = new HealthTestCase();
             healthTestCase.setStatus(Status.FAILED);

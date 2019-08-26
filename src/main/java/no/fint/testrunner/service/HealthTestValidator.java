@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class HealthTestValidator {
 
-
     public HealthTestCase generateStatus(Event<Health> healthEvent) {
         HealthTestCase healthTestCase = new HealthTestCase();
         healthTestCase.setHealthData(healthEvent.getData());
