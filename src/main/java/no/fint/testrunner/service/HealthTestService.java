@@ -55,7 +55,7 @@ public class HealthTestService {
         } catch (RestClientException e) {
             HealthTestCase healthTestCase = new HealthTestCase();
             healthTestCase.setStatus(Status.FAILED);
-            healthTestCase.setMessage(String.format("En feil oppstod under helsesjekken (%s)", e.getCause().getCause().getMessage()));
+            healthTestCase.setMessage(e.getMessage());
             return healthTestCase;
         }
 
