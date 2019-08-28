@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @CrossOrigin
-@Api(value = "Basic Tests")
+@Api(value = "Health Tests")
 @RequestMapping("/api/tests/health")
 public class HealthTestController {
 
@@ -22,9 +22,9 @@ public class HealthTestController {
     @PostMapping
     public ResponseEntity<HealthTestCase> startHealthTest(@RequestBody TestRequest testRequest) {
 
-        log.info("Starting basic test...");
+        log.info("Starting health test...");
         HealthTestCase healthTestCase = healthTestService.runHealthTest(testRequest);
-        log.info("Ending basic test...");
+        log.info("Ending health test...");
 
         return ResponseEntity.ok().body(healthTestCase);
     }
