@@ -1,6 +1,6 @@
 package no.fint.testrunner.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.json.JsonOutput
 import no.fint.event.model.Event
 import no.fint.event.model.health.Health
 import no.fint.event.model.health.HealthStatus
@@ -37,7 +37,7 @@ class HealthTestServiceSpec extends Specification {
     def "Run health test on non-pwf url with no health data"() {
         given:
         def testRequest = new TestRequest('http://localhost', '/test', 'client')
-        def healthEvent = toJson(new Event<Health>())
+        def healthEvent = JsonOutput.toJson(new Event<Health>())
         mockServer.expect(requestTo('http://localhost/test/admin/health')).andRespond(withSuccess(healthEvent, MediaType.APPLICATION_JSON))
 
         when:
@@ -51,7 +51,7 @@ class HealthTestServiceSpec extends Specification {
     def "Run health test on non-pwf url with healthy response from adapter"() {
         given:
         def testRequest = new TestRequest('http://localhost', '/test', 'client')
-        def healthEvent = toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_HEALTHY.name())]))
+        def healthEvent = JsonOutput.toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_HEALTHY.name())]))
         mockServer.expect(requestTo('http://localhost/test/admin/health')).andRespond(withSuccess(healthEvent, MediaType.APPLICATION_JSON))
 
         when:
@@ -65,7 +65,7 @@ class HealthTestServiceSpec extends Specification {
     def "Run health test on non-pwf url with unhealthy response from adapter"() {
         given:
         def testRequest = new TestRequest('http://localhost', '/test', 'client')
-        def healthEvent = toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_UNHEALTHY.name())]))
+        def healthEvent = JsonOutput.toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_UNHEALTHY.name())]))
         mockServer.expect(requestTo('http://localhost/test/admin/health')).andRespond(withSuccess(healthEvent, MediaType.APPLICATION_JSON))
 
         when:
@@ -75,9 +75,5 @@ class HealthTestServiceSpec extends Specification {
         mockServer.verify()
         result.status == Status.PARTIALLY_FAILED
     }
-
-    private static String toJson(def obj) {
-        new ObjectMapper().writeValueAsString(obj)
-    }
-
+    
 }
