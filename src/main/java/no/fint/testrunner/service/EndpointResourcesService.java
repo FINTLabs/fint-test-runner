@@ -15,7 +15,15 @@ public class EndpointResourcesService {
         resources = new HashMap<>();
 
         resources.put("/administrasjon/personal",
-                Arrays.asList("person", "personalressurs", "arbeidsforhold", "fravar", "fastlonn", "variabellonn", "fasttillegg"));
+                Arrays.asList(
+                        "person",
+                        "personalressurs",
+                        "arbeidsforhold",
+                        "fravar",
+                        "fastlonn",
+                        "variabellonn",
+                        "fasttillegg"
+                ));
         resources.put("/administrasjon/fullmakt",
                 Arrays.asList("fullmakt", "rolle"));
         resources.put("/administrasjon/kodeverk",
@@ -34,6 +42,35 @@ public class EndpointResourcesService {
                 ));
         resources.put("/administrasjon/organisasjon",
                 Collections.singletonList("organisasjonselement"));
+
+        resources.put("/administrasjon/arkiv",
+                Arrays.asList(
+                        "administrativenhet",
+                        "arkivdel",
+                        "arkivressurs",
+                        "autorisasjon",
+                        "dokumentfil",
+                        "dokumentstatus",
+                        "dokumenttype",
+                        "journalposttype",
+                        "journalstatus",
+                        "klasse",
+                        "klassifikasjonssystem",
+                        "korrespondansepart",
+                        "korrespondanseparttype",
+                        "merknadstype",
+                        "part",
+                        "partrolle",
+                        "rolle",
+                        "sak",
+                        "saksstatus",
+                        "skjermingshjemmel",
+                        "tilgang",
+                        "tilgangsrestriksjon",
+                        "tilknyttetregistreringsom",
+                        "variantformat"
+                )
+        );
 
         resources.put("/utdanning/vurdering",
                 Arrays.asList("eksamensgruppe", "vurdering", "fravar", "karakterverdi"));
