@@ -32,9 +32,9 @@ public class BasicTestService {
 
     private HttpHeaders headers;
 
-    public BasicTestResult runBasicTest(TestRequest testRequest) {
+    public BasicTestResult runBasicTest(String orgName, TestRequest testRequest) {
 
-        OAuth2AccessToken accessToken = accessTokenRepository.getAccessToken(testRequest.getClient());
+        OAuth2AccessToken accessToken = accessTokenRepository.getAccessToken(orgName);
 
         if (Pwf.isPwf(testRequest.getBaseUrl())) {
             headers = Headers.createPwfHeaders();

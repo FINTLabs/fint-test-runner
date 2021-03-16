@@ -21,16 +21,16 @@ class BasicTestControllerSpec extends MockMvcSpecification {
 
     def "Start basic test and get test result"() {
         given:
-        def request = new TestRequest('http://localhost', '/test', 'client')
+        def request = new TestRequest('http://localhost', '/test')
         def json = JsonOutput.toJson(request)
 
         when:
-        def response = mockMvc.perform(post('/api/tests/basic')
+        def response = mockMvc.perform(post('/api/tests/orgName/basic')
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
 
         then:
-        1 * service.runBasicTest(request) >> new BasicTestResult(message: 'test result')
+        1 * service.runBasicTest('orgName', request) >> new BasicTestResult(message: 'test result')
         response.andExpect(status().isOk())
                 .andExpect(jsonPathEquals('$.message', 'test result'))
     }

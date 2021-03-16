@@ -25,16 +25,7 @@ public class AccessTokenRepository {
     }
 
     // TODO key == organisationName?
-    public void clearAccessTokens(String organisationName) {
-        ConcurrentMap<String, OAuth2AccessToken> tempTokeCache = new ConcurrentSkipListMap<>();
-
-        tokenCache.forEach((s, oAuth2AccessToken) -> {
-            if (s.contains(organisationName)) {
-                tempTokeCache.put(s, oAuth2AccessToken);
-            }
-        });
-        tempTokeCache.forEach((s, oAuth2AccessToken) -> {
-            tokenCache.remove(s, oAuth2AccessToken);
-        });
+    public void deleteAccessToken(String key) {
+        tokenCache.remove(key);
     }
 }

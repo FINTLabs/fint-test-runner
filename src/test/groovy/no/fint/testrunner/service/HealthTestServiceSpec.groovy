@@ -22,7 +22,7 @@ class HealthTestServiceSpec extends Specification {
 
     void setup() {
         AccessTokenRepository accessTokenRepository = Mock() {
-            getAccessToken('client') >> Mock(OAuth2AccessToken) {
+            getAccessToken('orgName') >> Mock(OAuth2AccessToken) {
                 getValue() >> 'token'
             }
         }
@@ -36,12 +36,12 @@ class HealthTestServiceSpec extends Specification {
 
     def "Run health test on non-pwf url with no health data"() {
         given:
-        def testRequest = new TestRequest('http://localhost', '/test', 'client')
+        def testRequest = new TestRequest('http://localhost', '/test')
         def healthEvent = JsonOutput.toJson(new Event<Health>())
         mockServer.expect(requestTo('http://localhost/test/admin/health')).andRespond(withSuccess(healthEvent, MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.runHealthTest(testRequest)
+        def result = service.runHealthTest('orgName', testRequest)
 
         then:
         mockServer.verify()
@@ -50,12 +50,12 @@ class HealthTestServiceSpec extends Specification {
 
     def "Run health test on non-pwf url with healthy response from adapter"() {
         given:
-        def testRequest = new TestRequest('http://localhost', '/test', 'client')
+        def testRequest = new TestRequest('http://localhost', '/test')
         def healthEvent = JsonOutput.toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_HEALTHY.name())]))
         mockServer.expect(requestTo('http://localhost/test/admin/health')).andRespond(withSuccess(healthEvent, MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.runHealthTest(testRequest)
+        def result = service.runHealthTest('orgName', testRequest)
 
         then:
         mockServer.verify()
@@ -64,12 +64,12 @@ class HealthTestServiceSpec extends Specification {
 
     def "Run health test on non-pwf url with unhealthy response from adapter"() {
         given:
-        def testRequest = new TestRequest('http://localhost', '/test', 'client')
+        def testRequest = new TestRequest('http://localhost', '/test')
         def healthEvent = JsonOutput.toJson(new Event<Health>(data: [new Health(status: HealthStatus.APPLICATION_UNHEALTHY.name())]))
         mockServer.expect(requestTo('http://localhost/test/admin/health')).andRespond(withSuccess(healthEvent, MediaType.APPLICATION_JSON))
 
         when:
-        def result = service.runHealthTest(testRequest)
+        def result = service.runHealthTest('orgName', testRequest)
 
         then:
         mockServer.verify()

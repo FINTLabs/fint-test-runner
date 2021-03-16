@@ -33,7 +33,7 @@ public class HealthTestService {
     @Autowired
     private AccessTokenRepository accessTokenRepository;
 
-    public HealthTestCase runHealthTest(TestRequest testRequest) {
+    public HealthTestCase runHealthTest(String orgName, TestRequest testRequest) {
 
         HttpHeaders headers;
         ResponseEntity<Event<Health>> response;
@@ -42,7 +42,7 @@ public class HealthTestService {
         if (Pwf.isPwf(testRequest.getBaseUrl())) {
             headers = Headers.createPwfHeaders();
         } else {
-            headers = Headers.createHeaders(accessTokenRepository.getAccessToken(testRequest.getClient()).getValue());
+            headers = Headers.createHeaders(accessTokenRepository.getAccessToken(orgName).getValue());
         }
 
 

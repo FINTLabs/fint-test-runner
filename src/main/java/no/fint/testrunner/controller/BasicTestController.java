@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @Api(value = "Basic Tests")
-@RequestMapping("/api/tests/basic")
+@RequestMapping("/api/tests/{orgName}/basic")
 public class BasicTestController {
 
     @Autowired
     private BasicTestService basicTestService;
 
     @PostMapping
-    public ResponseEntity<BasicTestResult> startBasicTest(@RequestBody TestRequest testRequest) {
+    public ResponseEntity<BasicTestResult> startBasicTest(@PathVariable String orgName,
+                                                          @RequestBody TestRequest testRequest) {
         log.info("Starting basic test...");
-        BasicTestResult basicTestResult = basicTestService.runBasicTest(testRequest);
+        BasicTestResult basicTestResult = basicTestService.runBasicTest(orgName, testRequest);
         log.info("Ending basic test...");
 
         return ResponseEntity.ok().body(basicTestResult);
