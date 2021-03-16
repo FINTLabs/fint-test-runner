@@ -49,7 +49,7 @@ class AuthInitControllerSpec extends MockMvcSpecification {
                 .contentType(MediaType.APPLICATION_JSON_UTF8).content(JsonOutput.toJson(request)))
 
         then:
-        1 * clientService.getClientByDn('client') >> Optional.of(new Client(name: 'name', clientId: 'client-id'))
+        1 * clientService.getClient('client', 'orgName') >> Optional.of(new Client(name: 'name', clientId: 'client-id'))
         1 * clientService.getClientSecret(_ as Client) >> 'very-secret'
         1 * templateFactory.create('name', _ as String, 'client-id', 'very-secret') >> restTemplate
         1 * restTemplate.getAccessToken() >> Mock(OAuth2AccessToken)
