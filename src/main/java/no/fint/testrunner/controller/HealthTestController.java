@@ -13,17 +13,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @Api(value = "Health Tests")
-@RequestMapping("/api/tests/health")
+@RequestMapping("/api/tests/{orgName}/health")
 public class HealthTestController {
 
     @Autowired
     private HealthTestService healthTestService;
 
     @PostMapping
-    public ResponseEntity<HealthTestCase> startHealthTest(@RequestBody TestRequest testRequest) {
+    public ResponseEntity<HealthTestCase> startHealthTest(@PathVariable String orgName,
+                                                          @RequestBody TestRequest testRequest) {
 
         log.info("Starting health test...");
-        HealthTestCase healthTestCase = healthTestService.runHealthTest(testRequest);
+        HealthTestCase healthTestCase = healthTestService.runHealthTest(orgName, testRequest);
         log.info("Ending health test...");
 
         return ResponseEntity.ok().body(healthTestCase);

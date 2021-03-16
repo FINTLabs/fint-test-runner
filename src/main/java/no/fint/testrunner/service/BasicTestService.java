@@ -32,9 +32,9 @@ public class BasicTestService {
 
     private HttpHeaders headers;
 
-    public BasicTestResult runBasicTest(TestRequest testRequest) {
+    public BasicTestResult runBasicTest(String orgName, TestRequest testRequest) {
 
-        OAuth2AccessToken accessToken = accessTokenRepository.getAccessToken(testRequest.getClient());
+        OAuth2AccessToken accessToken = accessTokenRepository.getAccessToken(orgName);
 
         if (Pwf.isPwf(testRequest.getBaseUrl())) {
             headers = Headers.createPwfHeaders();
@@ -67,11 +67,11 @@ public class BasicTestService {
     private long getSize(TestRequest testRequest, String resource) {
         String url = String.format("%s/cache/size", testRequest.getTarget(resource));
 
-        log.info(url);
-
         try {
             ResponseEntity<BasicTestSize> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BasicTestSize.class);
-            return response.getBody().getSize();
+            final long size = response.getBody().getSize();
+            log.info("{} = {}", url, size);
+            return size;
         } catch (RestClientException e) {
             return -1;
         }
@@ -79,11 +79,12 @@ public class BasicTestService {
 
     private long getLastUpdated(TestRequest testRequest, String resource) {
         String url = String.format("%s/last-updated", testRequest.getTarget(resource));
-        log.info(url);
 
         try {
             ResponseEntity<BasicTestLastUpdated> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BasicTestLastUpdated.class);
-            return response.getBody().getLastUpdated();
+            final long lastUpdated = response.getBody().getLastUpdated();
+            log.info("{} = {}", url, lastUpdated);
+            return lastUpdated;
         } catch (RestClientException e) {
             return -1;
         }

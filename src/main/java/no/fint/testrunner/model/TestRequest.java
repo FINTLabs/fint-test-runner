@@ -17,7 +17,6 @@ public class TestRequest {
 
     private String baseUrl;
     private String endpoint;
-    private String client;
 
     @JsonIgnore
     public String getTarget(String resource) {

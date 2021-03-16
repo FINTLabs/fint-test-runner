@@ -21,16 +21,16 @@ class HealthTestControllerSpec extends MockMvcSpecification {
 
     def "Start health test and get test result"() {
         given:
-        def request = new TestRequest('http://localhost', '/test', 'client')
+        def request = new TestRequest('http://localhost', '/test')
         def json = JsonOutput.toJson(request)
 
         when:
-        def response = mockMvc.perform(post('/api/tests/health')
+        def response = mockMvc.perform(post('/api/tests/orgName/health')
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))
 
         then:
-        1 * service.runHealthTest(request) >> new HealthTestCase(message: 'test result')
+        1 * service.runHealthTest('orgName', request) >> new HealthTestCase(message: 'test result')
         response.andExpect(status().isOk())
                 .andExpect(jsonPathEquals('$.message', 'test result'))
     }

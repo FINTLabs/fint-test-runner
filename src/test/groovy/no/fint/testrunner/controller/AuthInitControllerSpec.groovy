@@ -35,25 +35,25 @@ class AuthInitControllerSpec extends MockMvcSpecification {
 
     def "Clear authorizations"() {
         when:
-        def response = mockMvc.perform(get('/api/tests/auth/clear/orgName'))
+        def response = mockMvc.perform(delete('/api/tests/orgName/auth/clear'))
 
         then:
-        1 * accessTokenRepository.clearAccessTokens('orgName')
+        1 * accessTokenRepository.deleteAccessToken('orgName')
         response.andExpect(status().isNoContent())
     }
 
     def 'Auth init'() {
         when:
-        def request = new TestRequest(baseUrl: '/base', endpoint: '/endpoint', client: 'client')
-        def response = mockMvc.perform(post('/api/tests/auth/init')
+        def request = new TestRequest(baseUrl: '/base', endpoint: '/endpoint')
+        def response = mockMvc.perform(post('/api/tests/orgName/auth/init/client')
                 .contentType(MediaType.APPLICATION_JSON_UTF8).content(JsonOutput.toJson(request)))
 
         then:
-        1 * clientService.getClientByDn('client') >> Optional.of(new Client(name: 'name', clientId: 'client-id'))
+        1 * clientService.getClient('client', 'orgName') >> Optional.of(new Client(name: 'name', clientId: 'client-id'))
         1 * clientService.getClientSecret(_ as Client) >> 'very-secret'
         1 * templateFactory.create('name', _ as String, 'client-id', 'very-secret') >> restTemplate
         1 * restTemplate.getAccessToken() >> Mock(OAuth2AccessToken)
-        1 * accessTokenRepository.addAccessToken('client', _ as OAuth2AccessToken)
+        1 * accessTokenRepository.addAccessToken('orgName', _ as OAuth2AccessToken)
         response.andExpect(status().isNoContent())
     }
 }

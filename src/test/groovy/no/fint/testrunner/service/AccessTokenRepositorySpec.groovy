@@ -28,7 +28,7 @@ class AccessTokenRepositorySpec extends Specification {
         repository.addAccessToken('key1', Mock(OAuth2AccessToken))
 
         when:
-        repository.clearAccessTokens('key1')
+        repository.deleteAccessToken('key1')
         def token = repository.getAccessToken('key1')
 
         then:

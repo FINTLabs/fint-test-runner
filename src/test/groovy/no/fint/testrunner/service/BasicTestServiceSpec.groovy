@@ -21,7 +21,7 @@ class BasicTestServiceSpec extends Specification {
 
     void setup() {
         AccessTokenRepository accessTokenRepository = Mock() {
-            getAccessToken('client') >> Mock(OAuth2AccessToken) {
+            getAccessToken('orgName') >> Mock(OAuth2AccessToken) {
                 getValue() >> 'token'
             }
         }
@@ -40,10 +40,10 @@ class BasicTestServiceSpec extends Specification {
 
         def cacheSize = JsonOutput.toJson(new BasicTestSize(size: 5))
         mockServer.expect(requestTo('http://localhost/test/test-resource/cache/size')).andRespond(withSuccess(cacheSize, MediaType.APPLICATION_JSON))
-        def testRequest = new TestRequest('http://localhost', '/test', 'client')
+        def testRequest = new TestRequest('http://localhost', '/test')
 
         when:
-        def result = service.runBasicTest(testRequest)
+        def result = service.runBasicTest('orgName', testRequest)
 
         then:
         1 * endpointResourcesService.getEndpointResources('/test') >> Optional.of(['test-resource'])

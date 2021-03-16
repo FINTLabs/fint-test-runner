@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @CrossOrigin
 @Api(value = "Basic Tests")
-@RequestMapping("/api/tests/auth")
+@RequestMapping("/api/tests/{orgName}/auth")
 public class AuthInitController {
 
     @Autowired
@@ -34,16 +34,19 @@ public class AuthInitController {
     @Autowired
     private OAuthRestTemplateFactory templateFactory;
 
-    @PostMapping("/init")
-    public ResponseEntity<Void> authorize(@RequestBody TestRequest testRequest) {
+    @PostMapping("/init/{clientName}")
+    public ResponseEntity<Void> authorize(@PathVariable String orgName,
+                                          @PathVariable String clientName,
+                                          @RequestBody TestRequest testRequest) {
 
         if (!Pwf.isPwf(testRequest.getBaseUrl())) {
-            boolean isExpired = Optional.ofNullable(accessTokenRepository.getAccessToken(testRequest.getClient())).map(OAuth2AccessToken::isExpired).orElse(true);
+            log.info("Auth Init, {}, {}", orgName, clientName);
+            boolean isExpired = Optional.ofNullable(accessTokenRepository.getAccessToken(orgName)).map(OAuth2AccessToken::isExpired).orElse(true);
             if (!isExpired) {
                 return ResponseEntity.noContent().build();
             }
 
-            Client client = clientService.getClientByDn(testRequest.getClient()).orElseThrow(SecurityException::new);
+            Client client = clientService.getClient(clientName, orgName).orElseThrow(SecurityException::new);
 
             String password = UUID.randomUUID().toString().toLowerCase();
             clientService.resetClientPassword(client, password);
@@ -51,9 +54,9 @@ public class AuthInitController {
 
             OAuth2RestTemplate oAuth2RestTemplate = templateFactory.create(client.getName(), password, client.getClientId(), clientSecret);
 
-            accessTokenRepository.addAccessToken(testRequest.getClient(), oAuth2RestTemplate.getAccessToken());
+            accessTokenRepository.addAccessToken(orgName, oAuth2RestTemplate.getAccessToken());
 
-            System.out.println("accessTokenRepository.getAccessToken() = " + accessTokenRepository.getAccessToken(testRequest.getClient()));
+            System.out.println("accessTokenRepository.getAccessToken() = " + accessTokenRepository.getAccessToken(orgName));
         }
         return ResponseEntity.noContent().build();
     }
@@ -63,9 +66,9 @@ public class AuthInitController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Sorry, men vi finner ikke klienten du valgte!");
     }
 
-    @GetMapping("/clear/{orgName}") // TODO should be a POST request
+    @DeleteMapping("/clear")
     public ResponseEntity<Void> clearAuthorizations(@PathVariable String orgName) {
-        accessTokenRepository.clearAccessTokens(orgName);
+        accessTokenRepository.deleteAccessToken(orgName);
         return ResponseEntity.noContent().build();
     }
 }
