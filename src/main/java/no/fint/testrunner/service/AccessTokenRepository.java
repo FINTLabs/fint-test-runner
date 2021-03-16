@@ -24,7 +24,6 @@ public class AccessTokenRepository {
         return tokenCache.put(key, value);
     }
 
-    // TODO key == organisationName?
     public void deleteAccessToken(String key) {
         tokenCache.remove(key);
     }
