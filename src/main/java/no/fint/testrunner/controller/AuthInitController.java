@@ -34,18 +34,19 @@ public class AuthInitController {
     @Autowired
     private OAuthRestTemplateFactory templateFactory;
 
-    @PostMapping("/init/{clientDn}")
+    @PostMapping("/init/{clientName}")
     public ResponseEntity<Void> authorize(@PathVariable String orgName,
-                                          @PathVariable String clientDn,
+                                          @PathVariable String clientName,
                                           @RequestBody TestRequest testRequest) {
 
         if (!Pwf.isPwf(testRequest.getBaseUrl())) {
+            log.info("Auth Init, {}, {}", orgName, clientName);
             boolean isExpired = Optional.ofNullable(accessTokenRepository.getAccessToken(orgName)).map(OAuth2AccessToken::isExpired).orElse(true);
             if (!isExpired) {
                 return ResponseEntity.noContent().build();
             }
 
-            Client client = clientService.getClientByDn(clientDn).orElseThrow(SecurityException::new);
+            Client client = clientService.getClient(clientName, orgName).orElseThrow(SecurityException::new);
 
             String password = UUID.randomUUID().toString().toLowerCase();
             clientService.resetClientPassword(client, password);
