@@ -1,6 +1,5 @@
 package no.fint;
 
-import com.github.springfox.loader.EnableSpringfox;
 import no.fint.oauth.OAuthConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +12,6 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 @Import(OAuthConfig.class)
-@EnableSpringfox
 @EnableAsync
 @EnableScheduling
 @SpringBootApplication

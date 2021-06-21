@@ -38,7 +38,6 @@ dependencies {
     compile('no.fint:fint-event-model:3.0.1')
     compile('no.fint:fint-portal-api:3.12.0-rc-7')
 
-    compile("com.github.springfox.loader:springfox-loader:${springfoxLoaderVersion}")
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
