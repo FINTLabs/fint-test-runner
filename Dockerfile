@@ -1,4 +1,4 @@
-FROM gradle:4.10.3-jdk11-slim as builder
+FROM gradle:6.3-jdk11 as builder
 USER root
 COPY . .
 RUN gradle --no-daemon build
