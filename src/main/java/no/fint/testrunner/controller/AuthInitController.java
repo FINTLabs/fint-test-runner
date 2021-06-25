@@ -2,21 +2,17 @@ package no.fint.testrunner.controller;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import no.fint.oauth.OAuthRestTemplateFactory;
-import no.fint.portal.model.client.Client;
-import no.fint.portal.model.client.ClientService;
 import no.fint.testrunner.model.TestRequest;
 import no.fint.testrunner.service.AccessTokenRepository;
+import no.fint.testrunner.service.AccessTokenService;
 import no.fint.testrunner.utilities.Pwf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -29,10 +25,7 @@ public class AuthInitController {
     private AccessTokenRepository accessTokenRepository;
 
     @Autowired
-    private ClientService clientService;
-
-    @Autowired
-    private OAuthRestTemplateFactory templateFactory;
+    private AccessTokenService accessTokenService;
 
     @PostMapping("/init/{clientName}")
     public ResponseEntity<Void> authorize(@PathVariable String orgName,
@@ -46,17 +39,7 @@ public class AuthInitController {
                 return ResponseEntity.noContent().build();
             }
 
-            Client client = clientService.getClient(clientName, orgName).orElseThrow(SecurityException::new);
-
-            String password = UUID.randomUUID().toString().toLowerCase();
-            clientService.resetClientPassword(client, password);
-            String clientSecret = clientService.getClientSecret(client);
-
-            OAuth2RestTemplate oAuth2RestTemplate = templateFactory.create(client.getName(), password, client.getClientId(), clientSecret);
-
-            accessTokenRepository.addAccessToken(orgName, oAuth2RestTemplate.getAccessToken());
-
-            System.out.println("accessTokenRepository.getAccessToken() = " + accessTokenRepository.getAccessToken(orgName));
+            accessTokenService.resetPasswordAndFetchAccessToken(orgName, clientName);
         }
         return ResponseEntity.noContent().build();
     }
