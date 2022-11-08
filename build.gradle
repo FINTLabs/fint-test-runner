@@ -1,69 +1,52 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.7'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
-    id "io.freefair.lombok" version "5.3.3.3"
+    id 'groovy'
 }
 
-group = 'no.fint'
+group = 'no.fintlabs'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 11
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+jar {
+    enabled = false
+}
 
 repositories {
     mavenCentral()
     repositories {
         maven {
-            url 'https://repo.fintlabs.no/releases'
+            url "https://repo.fintlabs.no/releases"
         }
     }
     mavenLocal()
 }
 
-
 dependencies {
-    compile('no.fint:fint-oauth-token-service:1.6.1')
-    compile('no.fint:fint-event-model:3.0.1')
-    compile('no.fint:fint-portal-api:3.12.0-rc-7')
+    implementation 'no.fintlabs:fint-oauth-token-service:1.7.0-rc-1'
+    implementation 'no.fint:fint-event-model:3.0.1'
+    implementation 'no.fintlabs:fint-portal-api:3.17.0-rc-2'
 
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('io.swagger:swagger-annotations:1.6.2')
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'io.swagger:swagger-annotations:1.6.8'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-    testCompile('no.fint:fint-test-utils:0.0.6')
-    testCompile("cglib:cglib-nodep:3.3.0")
-    testCompile("org.spockframework:spock-spring")
-    testCompile("org.spockframework:spock-core")
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testImplementation 'no.fint:fint-test-utils:0.0.6'
+    testImplementation 'cglib:cglib-nodep:3.3.0'
+    testImplementation 'org.spockframework:spock-spring'
+    testImplementation 'org.spockframework:spock-core'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-task copyExternalDependencies(type: Copy) {
-    from configurations.runtime
-    into "$buildDir/deps/external"
-    exclude '**/fint-*.jar'
-}
-
-task copyFintDependencies(type: Copy) {
-    from configurations.runtime
-    into "$buildDir/deps/fint"
-    include '**/fint-*.jar'
-}
-
-build.dependsOn(copyExternalDependencies)
-build.dependsOn(copyFintDependencies)
-
-jar {
-    enabled = true
-    manifest {
-        attributes(
-                "Manifest-Version": "1.0",
-                "Main-Class": "no.fint.Application",
-                "Specification-Version": "${version}",
-                "Implementation-Version": "${version}",
-                "Class-Path": configurations.runtime.collect { it.getName() }.join(' ')
-        )
-    }
-}
-
-bootJar {
-    enabled = false
+test {
+    useJUnitPlatform()
 }
