@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @Api(value = "Basic Tests")
-@RequestMapping("/api/tests/{orgName}/basic")
+@RequestMapping("/{orgName}/basic")
 public class BasicTestController {
 
     @Autowired

@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @CrossOrigin
 @Api(value = "Basic Tests")
-@RequestMapping("/api/tests/{orgName}/auth")
+@RequestMapping("/{orgName}/auth")
 public class AuthInitController {
 
     @Autowired
