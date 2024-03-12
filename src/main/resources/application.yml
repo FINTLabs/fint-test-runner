@@ -2,9 +2,6 @@ springfox:
  title: 'FINT Test Runner'
  version: '@version@'
 
-server:
- port: 8080
-
  spring:
   security:
    oauth2:
