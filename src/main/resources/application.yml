@@ -1,19 +1,19 @@
 springfox:
- title: 'FINT Test Runner'
- version: '@version@'
+  title: 'FINT Test Runner'
+  version: '@version@'
 
- spring:
+spring:
   security:
-   oauth2:
-    resourceserver:
-     jwt:
-      issuer-uri: https://idp.felleskomponent.no/nidp/oauth/nam
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://idp.felleskomponent.no/nidp/oauth/nam
 
 fint:
- oauth:
-  enabled: true
-  access-token-uri: https://idp.felleskomponent.no/nidp/oauth/nam/token
-  scope: fint-client
+  oauth:
+    enabled: true
+    access-token-uri: https://idp.felleskomponent.no/nidp/oauth/nam/token
+    scope: fint-client
 
 
 
