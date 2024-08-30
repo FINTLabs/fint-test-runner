@@ -19,6 +19,10 @@ spec:
   url:
     hostname: kunde-beta.felleskomponent.no
     basePath: /test-runner
+  ingress:
+    enabled: true
+    middlewares:
+      - fint-kunde-portal-sso
   envFrom:
     - secretRef:
         name: fint-portal-user
