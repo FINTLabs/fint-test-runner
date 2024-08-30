@@ -14,9 +14,10 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeRequests(a -> a
-                        .anyRequest()
-                        .authenticated()
-                ).build();
+                        .antMatchers("/**")
+                        .permitAll()
+                )
+                .build();
     }
 
 
