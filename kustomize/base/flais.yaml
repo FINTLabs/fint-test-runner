@@ -16,13 +16,6 @@ spec:
   imagePullPolicy: Always
   orgId: fintlabs.no
   image: ghcr.io/fintlabs/fint-test-runner:latest
-  url:
-    hostname: kunde-beta.felleskomponent.no
-    basePath: /test-runner
-  ingress:
-    enabled: true
-    middlewares:
-      - fint-test-runner-sso
   envFrom:
     - secretRef:
         name: fint-portal-user
