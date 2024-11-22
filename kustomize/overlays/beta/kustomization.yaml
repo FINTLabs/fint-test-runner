@@ -12,11 +12,3 @@ commonLabels:
   fintlabs.no/team: core
   fintlabs.no/org-id: fintlabs.no
 
-patches:
-  - patch: |-
-      - op: replace
-        path: "/spec/url/hostname"
-        value: 'kunde-beta.felleskomponent.no'
-    target:
-      kind: Application
-      name: fint-test-runner

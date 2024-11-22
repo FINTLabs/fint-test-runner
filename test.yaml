@@ -1,0 +1,38 @@
+apiVersion: fintlabs.no/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/instance: fint-test-runner_fintlabs_no
+    app.kubernetes.io/name: fint-test-runner
+    app.kubernetes.io/part-of: fint-core
+    app.kubernetes.io/version: latest
+    fintlabs.no/org-id: fintlabs.no
+    fintlabs.no/team: core
+  name: fint-test-runner
+  namespace: fintlabs-no
+spec:
+  env:
+  - name: JAVA_TOOL_OPTIONS
+    value: -XX:+ExitOnOutOfMemoryError -Xmx800M
+  envFrom:
+  - secretRef:
+      name: fint-portal-user
+  image: ghcr.io/fintlabs/fint-test-runner:latest
+  imagePullPolicy: Always
+  orgId: fintlabs.no
+  port: 8080
+  replicas: 1
+  resources:
+    limits:
+      cpu: "1"
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  restartPolicy: Always
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
